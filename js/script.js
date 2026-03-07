@@ -245,7 +245,7 @@ function initChatbot() {
 }
 
 function handleChatbotAction(action) {
-    const whatsappNumber = '919XXXXXXXXXX';
+    const whatsappNumber = '919156710633';
     const baseMessage = 'Hello Day Dream Consultancy, I am interested in your services';
     
     switch(action) {
@@ -260,7 +260,7 @@ function handleChatbotAction(action) {
             break;
         case 'hr':
             const message = encodeURIComponent(baseMessage + ' - I would like to talk to HR');
-            window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+            window.open(`https://wa.me/${919156710633}?text=${message}`, '_blank');
             break;
         default:
             window.location.href = 'contact.html';
