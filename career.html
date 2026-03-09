@@ -235,6 +235,13 @@
         </div>
     </section>
 
+    <div class="career-section">
+    <h2>If you are interested in joining our team, please send your resume to:</h2>
+    <p>
+        <a href="mailto:dayydreamconsultancy@gmail.com">dayydreamconsultancy@gmail.com</a>
+    </p>
+</div> 
+
     <!-- Job Application Form -->
     <section class="section-padding" style="background: #fff;">
         <div class="container">
@@ -515,6 +522,28 @@
             });
         });
     </script>
+    <script>
+
+document.getElementById("careerForm").addEventListener("submit", async function(e){
+
+e.preventDefault();
+
+let formData = new FormData(this);
+
+let response = await fetch("http://localhost:5000/apply",{
+method:"POST",
+body:formData
+});
+
+let result = await response.json();
+
+alert(result.message);
+
+this.reset();
+
+});
+
+</script>
     
     <!-- Responsive Styles -->
     <style>

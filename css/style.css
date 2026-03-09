@@ -481,7 +481,7 @@ img {
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 30px;
 }
 
@@ -2504,4 +2504,20 @@ img {
     .rights-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.career-section{
+    text-align: center;
+}
+
+.career-headline{
+    font-size: 32px;   /* increase or decrease size here */
+    font-weight: bold;
+}
+
+.career-section a{
+    font-size: 20px;
+    color: #2a6df4;
+    text-decoration: none;
+    font-weight: 600;
 }
