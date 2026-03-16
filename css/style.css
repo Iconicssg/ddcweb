@@ -499,7 +499,8 @@ img {
     box-shadow: var(--shadow-lg);
 }
 
-.feature-icon {
+.feature-icon,
+.ci-icon {
     width: 70px;
     height: 70px;
     background: var(--royal-blue);
@@ -510,6 +511,13 @@ img {
     margin: 0 auto 20px;
     font-size: 28px;
     color: var(--white);
+    transition: var(--transition);
+}
+
+.ci-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .feature-box h4 {
@@ -2520,4 +2528,45 @@ img {
     color: #2a6df4;
     text-decoration: none;
     font-weight: 600;
+}
+
+/* ============================================
+   Real-Time Validation Styles
+   ============================================ */
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+    border-color: #EF4444;
+    background-color: #FEF2F2;
+    animation: shake 0.4s 1;
+}
+
+.form-group input.success,
+.form-group select.success,
+.form-group textarea.success {
+    border-color: #10B981;
+    background-color: #F0FDF4;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.error-message {
+    font-size: 13px;
+    color: #EF4444;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: fadeIn 0.3s ease;
+}
+
+.error-message::before {
+    content: '\f071';
+    font-family: 'Font Awesome 6 Free', 'Arial', sans-serif;
+    font-weight: 900;
 }

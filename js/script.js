@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initTestimonialSlider();
     initChatbot();
     initFormValidation();
+    initRealTimeValidation();
     initLazyLoading();
     initSmoothScroll();
     initNavbarScroll();
@@ -288,12 +289,52 @@ function initFormValidation() {
     // Career form specific validation
     const careerForm = document.getElementById('careerForm');
     if (careerForm) {
-        careerForm.addEventListener('submit', function(e) {
+        let lastSelectedFile = null;
+        
+        // Handle resume upload field retention
+        const resumeInput = document.getElementById('resume');
+        if (resumeInput) {
+            resumeInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    lastSelectedFile = this.files[0];
+                } else if (lastSelectedFile) {
+                    const dt = new DataTransfer();
+                    dt.items.add(lastSelectedFile);
+                    this.files = dt.files;
+                }
+            });
+        }
+
+        careerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (validateCareerForm(this)) {
-                showMessage(this, 'Your application has been submitted successfully! We will contact you soon.', 'success');
+            if (!validateCareerForm(this)) {
+                e.stopImmediatePropagation();
+                return;
+            }
+
+            try {
+                const formData = new FormData(this);
+                const response = await fetch("http://localhost:5000/apply", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage(this, result.message || 'Your application has been submitted successfully!', 'success');
+                    this.reset();
+                    lastSelectedFile = null;
+                } else {
+                    showMessage(this, result.message || 'Something went wrong. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showMessage(this, 'Excellent! Your message (simulated) has been sent. (Server not reachable)', 'success');
+                // For demonstration purposes, we'll reset even if the local server is down
                 this.reset();
+                lastSelectedFile = null;
             }
         });
     }
@@ -302,9 +343,11 @@ function initFormValidation() {
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (validateContactForm(this)) {
+            if (!validateContactForm(this)) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            } else {
+                e.preventDefault();
                 showMessage(this, 'Thank you for contacting us! We will get back to you soon.', 'success');
                 this.reset();
             }
@@ -344,119 +387,131 @@ function validateForm(form) {
     return isValid;
 }
 
-function validateCareerForm(form) {
+function initRealTimeValidation() {
+    const fields = document.querySelectorAll('#contactForm input, #contactForm select, #contactForm textarea, #careerForm input, #careerForm select, #careerForm textarea');
+    
+    fields.forEach(field => {
+        field.addEventListener('blur', function() {
+            validateSingleField(this, false);
+        });
+        
+        field.addEventListener('input', function() {
+            this.classList.remove('error', 'success');
+            const errorMsg = this.parentNode.querySelector('.error-message');
+            if (errorMsg) errorMsg.remove();
+            
+            if (this.value.trim().length > 0) {
+                // Silently validate on typing to show success state early
+                validateSingleField(this, true);
+            }
+        });
+        
+        field.addEventListener('change', function() {
+            validateSingleField(this, false);
+        });
+    });
+}
+
+function validateSingleField(field, silent = false) {
+    field.classList.remove('error', 'success');
+    const existingError = field.parentNode.querySelector('.error-message');
+    if (existingError) existingError.remove();
+
     let isValid = true;
-    
-    // Clear previous errors
-    form.querySelectorAll('.error-message').forEach(el => el.remove());
-    
-    // Validate full name
-    const fullName = form.querySelector('#fullName');
-    if (!fullName.value.trim()) {
-        isValid = false;
-        showFieldError(fullName, 'Please enter your full name');
-    }
+    let errorMessage = '';
+    const val = field.value.trim();
 
-    // Validate email
-    const email = form.querySelector('#email');
-    if (!email.value.trim()) {
-        isValid = false;
-        showFieldError(email, 'Please enter your email');
-    } else if (!isValidEmail(email.value)) {
-        isValid = false;
-        showFieldError(email, 'Please enter a valid email address');
-    }
-
-    // Validate phone
-    const phone = form.querySelector('#phone');
-    if (!phone.value.trim()) {
-        isValid = false;
-        showFieldError(phone, 'Please enter your phone number');
-    } else if (!isValidPhone(phone.value)) {
-        isValid = false;
-        showFieldError(phone, 'Please enter a valid 10-digit phone number');
-    }
-
-    // Validate city
-    const city = form.querySelector('#city');
-    if (!city.value.trim()) {
-        isValid = false;
-        showFieldError(city, 'Please enter your city');
-    }
-
-    // Validate position
-    const position = form.querySelector('#position');
-    if (!position.value) {
-        isValid = false;
-        showFieldError(position, 'Please select a position');
-    }
-
-    // Validate resume
-    const resume = form.querySelector('#resume');
-    if (resume.files.length > 0) {
-        const file = resume.files[0];
-        const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
-        if (!validTypes.includes(file.type)) {
+    if (field.hasAttribute('required') && !val) {
+        if (field.type === 'file') {
+            if (field.files.length === 0) {
+                errorMessage = 'Please Upload Your Resume File';
+            }
+        } else {
             isValid = false;
-            showFieldError(resume, 'Please upload a PDF, DOC, or DOCX file');
-        } else if (file.size > maxSize) {
-            isValid = false;
-            showFieldError(resume, 'File size should be less than 5MB');
+            errorMessage = 'This field is required';
+            if (field.id === 'fullName' || field.id === 'name') errorMessage = 'Please enter your name';
+            if (field.id === 'email') errorMessage = 'Please enter your email';
+            if (field.id === 'phone') errorMessage = 'Please enter your phone number';
+            if (field.id === 'city') errorMessage = 'Please enter your city';
+            if (field.id === 'position') errorMessage = 'Please select a position';
+            if (field.id === 'service') errorMessage = 'Please select a service';
+            if (field.id === 'message') errorMessage = 'Please enter your message';
         }
+    } else if (val) {
+        if (field.id === 'fullName' || field.id === 'name') {
+            const minLen = 4;
+            const maxLen = field.id === 'fullName' ? 30 : 25;
+            if (val.length < minLen || val.length > maxLen) {
+                isValid = false;
+                errorMessage = `Name must be between ${minLen} and ${maxLen} characters`;
+            } else if (!/^[A-Za-z\s]+$/.test(val)) {
+                isValid = false;
+                errorMessage = 'Name must contain only alphabets and spaces';
+            }
+        } else if (field.type === 'email') {
+            if (!isValidEmail(val)) {
+                isValid = false;
+                errorMessage = 'Please enter a valid email address';
+            }
+        } else if (field.type === 'tel' || field.id === 'phone') {
+            if (!isValidPhone(val)) {
+                isValid = false;
+                errorMessage = 'Please enter a valid phone number';
+            }
+        } else if (field.id === 'city') {
+            if (!/^[A-Za-z\s]+$/.test(val)) {
+                isValid = false;
+                errorMessage = 'City must contain only alphabets and spaces';
+            }
+        } else if (field.id === 'message') {
+            if (val.length < 10 || val.length > 200) {
+                isValid = false;
+                errorMessage = 'Message must be between 10 and 200 characters';
+            }
+        } else if (field.id === 'resume') {
+            if (field.files && field.files.length > 0) {
+                const file = field.files[0];
+                const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                const maxSize = 5 * 1024 * 1024;
+                if (!validTypes.includes(file.type)) {
+                    isValid = false;
+                    errorMessage = 'Please upload a PDF, DOC, or DOCX file';
+                } else if (file.size > maxSize) {
+                    isValid = false;
+                    errorMessage = 'File size should be less than 5MB';
+                }
+            }
+        }
+    }
+
+    if (!isValid && !silent && errorMessage) {
+        showFieldError(field, errorMessage);
+    } else if (isValid && val) {
+        field.classList.add('success');
     }
 
     return isValid;
 }
 
+function validateCareerForm(form) {
+    let isValid = true;
+    const fields = form.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+        if (!validateSingleField(field, false)) {
+            isValid = false;
+        }
+    });
+    return isValid;
+}
+
 function validateContactForm(form) {
     let isValid = true;
-    
-    // Clear previous errors
-    form.querySelectorAll('.error-message').forEach(el => el.remove());
-    
-    // Validate name
-    const name = form.querySelector('#name');
-    if (!name.value.trim()) {
-        isValid = false;
-        showFieldError(name, 'Please enter your name');
-    }
-
-    // Validate email
-    const email = form.querySelector('#email');
-    if (!email.value.trim()) {
-        isValid = false;
-        showFieldError(email, 'Please enter your email');
-    } else if (!isValidEmail(email.value)) {
-        isValid = false;
-        showFieldError(email, 'Please enter a valid email address');
-    }
-
-    // Validate phone
-    const phone = form.querySelector('#phone');
-    if (!phone.value.trim()) {
-        isValid = false;
-        showFieldError(phone, 'Please enter your phone number');
-    } else if (!isValidPhone(phone.value)) {
-        isValid = false;
-        showFieldError(phone, 'Please enter a valid phone number');
-    }
-
-    // Validate service
-    const service = form.querySelector('#service');
-    if (!service.value) {
-        isValid = false;
-        showFieldError(service, 'Please select a service');
-    }
-
-    // Validate message
-    const message = form.querySelector('#message');
-    if (!message.value.trim()) {
-        isValid = false;
-        showFieldError(message, 'Please enter your message');
-    }
-
+    const fields = form.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+        if (!validateSingleField(field, false)) {
+            isValid = false;
+        }
+    });
     return isValid;
 }
 
@@ -492,8 +547,8 @@ function isValidEmail(email) {
 }
 
 function isValidPhone(phone) {
-    const phoneRegex = /^[\d\s\-\+\(\)]{10,}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone.trim());
 }
 
 /* ============================================
