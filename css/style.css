@@ -1494,9 +1494,28 @@ img {
     font-size: 14px;
 }
 
+.footer-contact a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.footer-contact a:hover {
+    color: var(--powder-blue);
+    cursor: pointer;
+}
+
 .footer-contact i {
     color: var(--powder-blue);
     margin-top: 3px;
+    transition: var(--transition);
+}
+
+.footer-contact a:hover i {
+    transform: scale(1.1);
 }
 
 .footer-social {
