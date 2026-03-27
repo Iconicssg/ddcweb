@@ -22,13 +22,325 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23162660' width='100' height='100' rx='15'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='45' font-weight='bold' text-anchor='middle' fill='white'%3EDD%3C/text%3E%3C/svg%3E">
+
+    <style>
+        /* ===== FOUNDER / CEO SECTION ===== */
+        .founder-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f0f6ff 0%, #e8f2ff 50%, #f5f8ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .founder-section::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(22,38,96,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .founder-section::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(208,230,253,0.5) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .founder-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(22, 38, 96, 0.10), 0 2px 12px rgba(22, 38, 96, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 50px 56px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .founder-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(22, 38, 96, 0.15), 0 4px 20px rgba(22, 38, 96, 0.08);
+        }
+
+        /* Image side */
+        .founder-image-wrap {
+            flex: 0 0 300px;
+            width: 300px;
+        }
+
+        .founder-img-frame {
+            position: relative;
+            width: 280px;
+            height: 340px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(22, 38, 96, 0.18);
+        }
+
+        .founder-img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            border-radius: 16px;
+            transition: transform 0.4s ease;
+        }
+
+        .founder-card:hover .founder-img-frame img {
+            transform: scale(1.04);
+        }
+
+        .founder-img-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 2px rgba(22,38,96,0.12);
+            pointer-events: none;
+        }
+
+        /* Decorative badge */
+        .founder-badge {
+            position: absolute;
+            bottom: -14px;
+            right: -14px;
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #162660, #2a4ab5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(22,38,96,0.30);
+            z-index: 2;
+        }
+
+        .founder-badge i {
+            color: #D0E6FD;
+            font-size: 26px;
+        }
+
+        /* Content side */
+        .founder-content {
+            flex: 1;
+        }
+
+        .founder-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #162660, #2a4ab5);
+            color: #D0E6FD;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 100px;
+            margin-bottom: 18px;
+        }
+
+        .founder-label i {
+            font-size: 10px;
+        }
+
+        .founder-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 34px;
+            font-weight: 700;
+            color: #162660;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .founder-position {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2a4ab5;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .founder-position::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 3px;
+            background: linear-gradient(90deg, #162660, #2a4ab5);
+            border-radius: 2px;
+        }
+
+        .founder-bio {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 15.5px;
+            line-height: 1.85;
+            color: #4a5568;
+            margin-bottom: 28px;
+        }
+
+        .founder-divider {
+            width: 48px;
+            height: 4px;
+            background: linear-gradient(90deg, #162660, #D0E6FD);
+            border-radius: 2px;
+            margin-bottom: 28px;
+        }
+
+        .founder-linkedin {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0077B5;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+            box-shadow: 0 4px 14px rgba(0,119,181,0.25);
+        }
+
+        .founder-linkedin:hover {
+            background: #005f93;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,119,181,0.35);
+            color: white;
+        }
+
+        .founder-linkedin i {
+            font-size: 17px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .founder-card {
+                flex-direction: column;
+                padding: 36px 28px 40px;
+                gap: 36px;
+                text-align: center;
+            }
+
+            .founder-image-wrap {
+                flex: unset;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .founder-img-frame {
+                width: 220px;
+                height: 260px;
+            }
+
+            .founder-content h2 {
+                font-size: 26px;
+            }
+
+            .founder-position {
+                justify-content: center;
+            }
+
+            .founder-position::before {
+                display: none;
+            }
+
+            .founder-label {
+                display: inline-flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .founder-section {
+                padding: 56px 0;
+            }
+
+            .founder-card {
+                padding: 28px 18px 32px;
+                border-radius: 14px;
+            }
+
+            .founder-img-frame {
+                width: 180px;
+                height: 220px;
+            }
+        }
+
+        /* ===== UPDATED WHO WE ARE SECTION ===== */
+        .about-content .about-image-real {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(22,38,96,0.12);
+            height: 420px;
+            position: relative;
+        }
+
+        .about-content .about-image-real img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .about-content .about-image-real:hover img {
+            transform: scale(1.04);
+        }
+
+        /* Subtle gradient overlay on office image */
+        .about-content .about-image-real::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 55%, rgba(22,38,96,0.18) 100%);
+            pointer-events: none;
+        }
+
+        /* Section sub-heading spacing */
+        .founder-section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .founder-section-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: #162660;
+            margin-bottom: 10px;
+        }
+
+        .founder-section-header p {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            color: #6B7280;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="logo">
-    <img src="images/logo.png" alt="Day Dream Logo" class="logo-img">
+                <img src="images/logo.png" alt="Day Dream Logo" class="logo-img">
                 <div class="logo-text">Day Dream <span>Consultancy</span></div>
             </a>
             
@@ -40,7 +352,6 @@
                 <li><a href="career.html" class="nav-link">Career</a></li>
                 <li><a href="contact.html" class="nav-link">Contact Us</a></li>
             
-                
                 <div class="nav-buttons mobile-only">
                     <a href="contact.html" class="btn btn-primary">
                         <i class="fas fa-phone"></i> Get Started
@@ -76,37 +387,120 @@
         </div>
     </header>
 
-    <!-- About Content Section -->
+    <!-- ===== MEET OUR FOUNDER / CEO SECTION ===== -->
+    <section class="founder-section">
+        <div class="container">
+
+            <div class="founder-section-header fade-in-up">
+                <h2>Meet Our Founder / CEO</h2>
+                <p>The visionary behind DayDream Consultancy</p>
+            </div>
+
+            <div class="founder-card fade-in-up">
+
+                <!-- Image -->
+                <div class="founder-image-wrap">
+                    <div class="founder-img-frame">
+                        <!--
+                            ACTION REQUIRED: Save the provided founder photo as:
+                            images/founder.jpg
+                            (inside your project's images folder)
+                        -->
+                        <img
+                            src="images/CEO.jpeg"
+                            alt="Devendra Kumar Thantepude – Founder & CEO, DayDream Consultancy"
+                            loading="lazy"
+                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Devendra+Kumar&size=280&background=162660&color=D0E6FD&bold=true&font-size=0.38';"
+                        >
+                        <div class="founder-badge">
+                            <i class="fas fa-award"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="founder-content">
+                    <span class="founder-label">
+                        <i class="fas fa-star"></i>
+                        Leadership
+                    </span>
+
+                    <h2>Devendra Kumar Thantepude</h2>
+
+                    <p class="founder-position">Founder &amp; CEO</p>
+
+                    <div class="founder-divider"></div>
+
+                    <p class="founder-bio">
+                        A visionary leader with a strong passion for recruitment and talent development, 
+                        Devendra Kumar Thantepude founded DayDream Consultancy with the goal of simplifying 
+                        hiring challenges. With deep industry understanding and a people-first approach, 
+                        he focuses on connecting the right talent with the right opportunities while building 
+                        long-term professional relationships.
+                    </p>
+
+                    <a href="https://www.linkedin.com/in/devendra-kumar-thantepude-ba11272a1/" target="_blank" class="founder-linkedin">
+                        <i class="fab fa-linkedin"></i>
+                        Connect on LinkedIn
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== WHO WE ARE / ABOUT CONTENT SECTION ===== -->
     <section class="about-content">
         <div class="container">
             <div class="about-grid">
+
+                <!-- Updated Office / Team Image -->
                 <div class="about-image fade-in-up">
-                    <div style="background: linear-gradient(135deg, #162660 0%, #D0E6FD 100%); height: 400px; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-building" style="font-size: 120px; color: rgba(255,255,255,0.3);"></i>
+                    <div class="about-image-real">
+                        <!--
+                            Corporate/team collaboration image.
+                            Using a reliable royalty-free Unsplash image.
+                            You may replace src with your own office photo.
+                        -->
+                        <img
+                            src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=80&auto=format&fit=crop"
+                            alt="DayDream Consultancy team collaboration"
+                            loading="lazy"
+                        >
                     </div>
                 </div>
+
+                <!-- Updated About Text -->
                 <div class="about-text fade-in-up">
-                    <h2>Who We Are</h2>
+                    <h2>About DayDream Consultancy</h2>
                     <p>
-                        Day Dream Consultancy is a professional HR consultancy and recruitment partner dedicated to 
-                        helping businesses build exceptional teams. Founded with a vision to bridge the gap between 
-                        talent and opportunity, we have grown to become one of the most trusted names in the 
-                        recruitment and staffing industry.
+                        DayDream Consultancy was established with a clear purpose — to connect talented individuals 
+                        with the right career opportunities while helping organizations build strong and reliable teams. 
+                        The idea was born from observing the challenges faced by both job seekers and employers in 
+                        today's competitive hiring environment, where finding the right match often becomes complex 
+                        and time-consuming.
                     </p>
                     <p>
-                        Our team of experienced recruiters and HR professionals brings deep industry knowledge 
-                        and expertise to every engagement. We understand that every organization is unique, and 
-                        we tailor our solutions to meet your specific needs, culture, and business objectives.
+                        Driven by a passion for people and growth, DayDream Consultancy focuses on creating a smooth, 
+                        transparent, and efficient recruitment process. Our approach goes beyond traditional hiring by 
+                        understanding candidate aspirations, skill potential, and company culture to ensure long-term 
+                        professional success for both parties.
                     </p>
                     <p>
-                        From startups to Fortune 500 companies, we have helped organizations across diverse 
-                        industries find the right talent to drive their success. Our comprehensive services 
-                        include recruitment, staffing, BPO operations, training, and workforce management.
+                        From its early beginnings, the consultancy has grown through dedication, trust, and a commitment 
+                        to delivering quality placements. We specialize in backend hiring processes, talent sourcing, 
+                        and customized recruitment solutions designed to meet evolving business needs.
+                    </p>
+                    <p>
+                        At DayDream Consultancy, we believe recruitment is not just about filling positions — it is about 
+                        shaping careers and supporting organizational success. Every opportunity we create reflects our 
+                        mission to empower individuals, strengthen businesses, and turn career dreams into reality.
                     </p>
                     <a href="services.html" class="btn btn-royal">
                         <i class="fas fa-arrow-right"></i> Explore Our Services
                     </a>
                 </div>
+
             </div>
         </div>
     </section>
@@ -115,7 +509,7 @@
     <section class="mission-vision-section">
         <div class="container">
             <div class="section-header fade-in-up">
-                <h2>Our Mission & Vision</h2>
+                <h2>Our Mission &amp; Vision</h2>
                 <p>Driven by purpose, guided by values</p>
             </div>
             
@@ -233,45 +627,6 @@
         </div>
     </section>
 
-    <!-- Team Section
-    <section class="section-padding" style="background: #F1E4D1;">
-        <div class="container">
-            <div class="section-header fade-in-up">
-                <h2>Our Leadership</h2>
-                <p>Meet the experts behind our success</p>
-            </div>
-            
-            <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                <div class="service-card fade-in-up" style="text-align: center;">
-                    <div style="width: 120px; height: 120px; background: #162660; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user" style="font-size: 50px; color: white;"></i>
-                    </div>
-                    <h3>Devendra Kumar</h3>
-                    <p style="color: #6B7280; margin-bottom: 15px;">Founder & CEO</p>
-                    <p style="font-size: 14px;">With over 15 years of experience in HR and recruitment, Vikram leads our vision and strategy.</p>
-                </div>
-                
-                <div class="service-card fade-in-up" style="text-align: center;">
-                    <div style="width: 120px; height: 120px; background: #162660; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user" style="font-size: 50px; color: white;"></i>
-                    </div>
-                    <h3>Neha Sharma</h3>
-                    <p style="color: #6B7280; margin-bottom: 15px;">Director - Operations</p>
-                    <p style="font-size: 14px;">Neha oversees our day-to-day operations ensuring seamless service delivery to all clients.</p>
-                </div>
-                
-                <div class="service-card fade-in-up" style="text-align: center;">
-                    <div style="width: 120px; height: 120px; background: #162660; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-user" style="font-size: 50px; color: white;"></i>
-                    </div>
-                    <h3>Rahul Kapoor</h3>
-                    <p style="color: #6B7280; margin-bottom: 15px;">Head of Recruitment</p>
-                    <p style="font-size: 14px;">Rahul leads our recruitment team with expertise in tech and executive hiring.</p>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
@@ -342,9 +697,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="mailto:dayydreamconsultancy@gmail.com">
+                            <a href="/cdn-cgi/l/email-protection#3f5b5e46465b4d5a5e525c50514c4a534b5e515c467f58525e5653115c5052">
                                 <i class="fas fa-envelope"></i>
-                                <span>dayydreamconsultancy@gmail.com</span>
+                                <span><span class="__cf_email__" data-cfemail="8eeaeff7f7eafcebefe3ede1e0fdfbe2faefe0edf7cee9e3efe7e2a0ede1e3">[email&#160;protected]</span></span>
                             </a>
                         </li>
                         <li>
@@ -370,7 +725,6 @@
        aria-label="Chat on WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
-
 
     <!-- Chatbot Widget -->
     <div class="chatbot-widget">
@@ -405,16 +759,8 @@
     </div>
 
     <!-- Custom JavaScript -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="js/script.js"></script>
-    
-    <!-- Responsive Styles -->
-    <style>
-        @media (min-width: 769px) {
-            .mobile-only { display: none !important; }
-        }
-        @media (max-width: 768px) {
-            .desktop-only { display: none !important; }
-        }
-    </style>
+
 </body>
 </html>
