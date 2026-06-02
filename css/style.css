@@ -24,6 +24,18 @@
     --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* Performance Optimizations */
+@keyframes ripple {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Reset & Base Styles */
 * {
     margin: 0;
@@ -77,7 +89,7 @@ img {
 }
 
 /* ============================================
-   Navigation Styles
+   Navigation Styles (Optimized)
    ============================================ */
 .navbar {
     position: fixed;
@@ -89,6 +101,7 @@ img {
     padding: 15px 0;
     transition: var(--transition);
     box-shadow: var(--shadow-md);
+    will-change: padding, box-shadow;
 }
 
 .navbar.scrolled {
@@ -179,6 +192,7 @@ img {
     transition: var(--transition);
     border: none;
     font-family: 'Poppins', sans-serif;
+    position: relative;
 }
 
 .btn-primary {
@@ -401,6 +415,7 @@ img {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow;
 }
 
 .service-card::before {
@@ -578,6 +593,7 @@ img {
     display: flex;
     gap: 60px;
     animation: scroll 30s linear infinite;
+    will-change: transform;
 }
 
 .clients-slider:hover {

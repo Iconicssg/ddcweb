@@ -3,7 +3,30 @@
  * Features: Navigation, Animations, Counters, Chatbot, Form Validation, Sliders
  */
 
+// Cache DOM elements
+const CACHED_ELEMENTS = {};
+function getCachedElement(selector) {
+    if (!CACHED_ELEMENTS[selector]) {
+        CACHED_ELEMENTS[selector] = document.querySelector(selector);
+    }
+    return CACHED_ELEMENTS[selector];
+}
+
+/* ============================================
+   Active Navigation Link
+   ============================================ */
+function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute('href');
+        link.classList.toggle('active', linkPage === currentPage || (currentPage === '' && linkPage === 'index.html'));
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    setActiveNavLink();
     // Initialize all components
     initNavigation();
     initScrollAnimations();
@@ -15,6 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initLazyLoading();
     initSmoothScroll();
     initNavbarScroll();
+    initBackToTop();
+    initPreloader();
+    if (document.querySelector('.clients-slider')) {
+        initClientSlider();
+    }
 });
 
 /* ============================================
@@ -64,18 +92,25 @@ function resetHamburgerAnimation() {
 }
 
 /* ============================================
-   Navbar Scroll Effect
+   Navbar Scroll Effect (Throttled)
    ============================================ */
 function initNavbarScroll() {
-    const navbar = document.querySelector('.navbar');
+    const navbar = getCachedElement('.navbar');
+    let ticking = false;
     
     window.addEventListener('scroll', function() {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
-    });
+    }, { passive: true });
 }
 
 /* ============================================
@@ -391,6 +426,8 @@ function initRealTimeValidation() {
     const fields = document.querySelectorAll('#contactForm input, #contactForm select, #contactForm textarea, #careerForm input, #careerForm select, #careerForm textarea');
     
     fields.forEach(field => {
+        let validationTimeout;
+        
         field.addEventListener('blur', function() {
             validateSingleField(this, false);
         });
@@ -400,13 +437,17 @@ function initRealTimeValidation() {
             const errorMsg = this.parentNode.querySelector('.error-message');
             if (errorMsg) errorMsg.remove();
             
+            // Debounce validation on typing
+            clearTimeout(validationTimeout);
             if (this.value.trim().length > 0) {
-                // Silently validate on typing to show success state early
-                validateSingleField(this, true);
+                validationTimeout = setTimeout(() => {
+                    validateSingleField(this, true);
+                }, 300);
             }
         });
         
         field.addEventListener('change', function() {
+            clearTimeout(validationTimeout);
             validateSingleField(this, false);
         });
     });
@@ -547,7 +588,7 @@ function isValidEmail(email) {
 }
 
 function isValidPhone(phone) {
-    const phoneRegex = /^\d{10}$/;
+    const phoneRegex = /^(\+?91)?[-\s]?[6-9]\d{9}$/;
     return phoneRegex.test(phone.trim());
 }
 
@@ -584,22 +625,25 @@ function initLazyLoading() {
    Smooth Scroll
    ============================================ */
 function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                e.preventDefault();
-                const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                const targetPosition = targetElement.offsetTop - navbarHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+    const navbar = getCachedElement('.navbar');
+    
+    document.addEventListener('click', function(e) {
+        const anchor = e.target.closest('a[href^="#"]');
+        if (!anchor) return;
+        
+        const targetId = anchor.getAttribute('href');
+        if (targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if (!targetElement) return;
+        
+        e.preventDefault();
+        const navbarHeight = navbar ? navbar.offsetHeight : 80;
+        const targetPosition = targetElement.offsetTop - navbarHeight;
+        
+        window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
         });
     });
 }
@@ -650,50 +694,41 @@ function throttle(func, limit) {
     };
 }
 
-// Add ripple effect to buttons
-document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple 0.6s ease-out;
-            pointer-events: none;
-        `;
-        
-        this.appendChild(ripple);
-        
-        setTimeout(() => ripple.remove(), 600);
-    });
-});
-
-// Add ripple animation keyframes
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
+// Add ripple effect to buttons using event delegation
+document.addEventListener('click', function(e) {
+    const button = e.target.closest('.btn');
+    if (!button) return;
+    
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    
+    ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s ease-out;
+        pointer-events: none;
+    `;
+    
+    button.appendChild(ripple);
+    
+    setTimeout(() => ripple.remove(), 600);
+}, true);
 
 /* ============================================
-   Back to Top Button
+   Back to Top Button (Optimized)
    ============================================ */
 function initBackToTop() {
+    if (document.querySelector('.back-to-top')) return; // Already exists
+    
     const backToTop = document.createElement('button');
     backToTop.innerHTML = '<i class="fas fa-arrow-up"></i>';
     backToTop.className = 'back-to-top';
@@ -721,15 +756,22 @@ function initBackToTop() {
     
     document.body.appendChild(backToTop);
     
-    window.addEventListener('scroll', throttle(function() {
-        if (window.scrollY > 500) {
-            backToTop.style.opacity = '1';
-            backToTop.style.visibility = 'visible';
-        } else {
-            backToTop.style.opacity = '0';
-            backToTop.style.visibility = 'hidden';
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                if (window.scrollY > 500) {
+                    backToTop.style.opacity = '1';
+                    backToTop.style.visibility = 'visible';
+                } else {
+                    backToTop.style.opacity = '0';
+                    backToTop.style.visibility = 'hidden';
+                }
+                ticking = false;
+            });
+            ticking = true;
         }
-    }, 100));
+    }, { passive: true });
     
     backToTop.addEventListener('click', function() {
         window.scrollTo({
@@ -738,9 +780,6 @@ function initBackToTop() {
         });
     });
 }
-
-// Initialize back to top button
-initBackToTop();
 
 /* ============================================
    Preloader
@@ -759,6 +798,8 @@ function initPreloader() {
         align-items: center;
         justify-content: center;
         z-index: 9999;
+        opacity: 1;
+        visibility: visible;
         transition: opacity 0.5s ease, visibility 0.5s ease;
     `;
     
@@ -779,39 +820,20 @@ function initPreloader() {
     
     document.body.appendChild(preloader);
     
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-            setTimeout(function() {
-                preloader.remove();
-            }, 500);
-        }, 500);
-    });
-}
-
-// Initialize preloader
-initPreloader();
-
-/* ============================================
-   Active Navigation Link
-   ============================================ */
-function setActiveNavLink() {
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('.nav-link');
+    const hidePreloader = () => {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+    };
     
-    navLinks.forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage || (currentPage === '' && linkPage === 'index.html')) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
+    // Hide preloader when page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(hidePreloader, 300);
+        });
+    } else {
+        setTimeout(hidePreloader, 300);
+    }
 }
-
-// Set active nav link on page load
-setActiveNavLink();
 
 /* ============================================
    Console Message
