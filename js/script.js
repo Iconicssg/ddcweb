@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initSmoothScroll();
     initNavbarScroll();
     initBackToTop();
-    initPreloader();
     if (document.querySelector('.clients-slider')) {
         initClientSlider();
     }
@@ -781,59 +780,6 @@ function initBackToTop() {
     });
 }
 
-/* ============================================
-   Preloader
-   ============================================ */
-function initPreloader() {
-    const preloader = document.createElement('div');
-    preloader.className = 'preloader';
-    preloader.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--royal-blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
-    `;
-    
-    preloader.innerHTML = `
-        <div style="text-align: center;">
-            <div class="spinner" style="
-                width: 50px;
-                height: 50px;
-                border: 4px solid var(--powder-blue);
-                border-top-color: white;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin: 0 auto 20px;
-            "></div>
-            <p style="color: white; font-family: Poppins, sans-serif;">Loading...</p>
-        </div>
-    `;
-    
-    document.body.appendChild(preloader);
-    
-    const hidePreloader = () => {
-        preloader.style.opacity = '0';
-        preloader.style.visibility = 'hidden';
-    };
-    
-    // Hide preloader when page loads
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(hidePreloader, 300);
-        });
-    } else {
-        setTimeout(hidePreloader, 300);
-    }
-}
 
 /* ============================================
    Console Message
